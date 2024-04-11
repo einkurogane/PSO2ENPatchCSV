@@ -1,8 +1,8 @@
-version: 2
+version: 4
 jobs:
   build:
     docker:
-      - image: circleci/python:3-buster-node
+      - image: cimg/python:3.11-node
         environment:
           PARALLEL_SHELL: /bin/sh
           SHELL: /bin/sh
@@ -16,11 +16,13 @@ jobs:
     steps:
       - run:
           name: Update APT listing
-          command: sudo apt-get -qq update
+          command: sudo apt-get -qq update && sudo apt upgrade -y
       - run:
           name: Install rsync
           command: sudo apt-get --no-install-recommends -qq -y install rsync
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
           name: Checking DUP folders
           command: ./_sh/dupfolders.sh
@@ -108,3 +110,5 @@ jobs:
       - store_artifacts:
           path: /tmp/PSO2.CSV.gz
           destination: PSO2.CSV.gz
+          resource_class: large
+resource_class: large
